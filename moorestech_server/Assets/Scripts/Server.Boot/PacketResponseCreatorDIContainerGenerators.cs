@@ -1,5 +1,4 @@
 using System.IO;
-using Arch.Core;
 using Core.ConfigJson;
 using Core.EnergySystem;
 using Core.EnergySystem.Electric;
@@ -27,6 +26,7 @@ using Game.PlayerInventory.Interface;
 using Game.PlayerInventory.Interface.Event;
 using Game.SaveLoad.Interface;
 using Game.SaveLoad.Json;
+using Game.SystemScheduler;
 using Game.World.DataStore;
 using Game.World.DataStore.WorldSettings;
 using Game.World.Event;
@@ -72,10 +72,13 @@ namespace Server.Boot
             services.AddSingleton<EventProtocolProvider, EventProtocolProvider>();
             services.AddSingleton<IWorldSettingsDatastore, WorldSettingsDatastore>();
             services.AddSingleton<IWorldBlockDatastore, WorldBlockDatastore>();
-            services.AddSingleton<IECSWorld>(new ECSWorld(World.Create()));
+            services.AddSingleton<IECSWorld, ECSWorld>();
+            services.AddSingleton<SystemUpdater>();
             services.AddSingleton<IPlayerInventoryDataStore, PlayerInventoryDataStore>();
             services.AddSingleton<IBlockInventoryOpenStateDataStore, BlockInventoryOpenStateDataStore>();
-            services.AddSingleton<IWorldEnergySegmentDatastore<EnergySegment>, WorldEnergySegmentDatastore<EnergySegment>>();
+            services
+                .AddSingleton<IWorldEnergySegmentDatastore<EnergySegment>,
+                    WorldEnergySegmentDatastore<EnergySegment>>();
             services.AddSingleton<MaxElectricPoleMachineConnectionRange, MaxElectricPoleMachineConnectionRange>();
             services.AddSingleton<IOreConfig, OreConfig>();
             services.AddSingleton<VeinGenerator, VeinGenerator>();
@@ -111,7 +114,9 @@ namespace Server.Boot
             services.AddSingleton<BlockPlaceEventToBlockInventoryConnect>();
             services.AddSingleton<BlockRemoveEventToBlockInventoryDisconnect>();
 
-            services.AddSingleton<EnergyConnectUpdaterContainer<EnergySegment, IBlockElectricConsumer, IElectricGenerator, IElectricPole>>();
+            services
+                .AddSingleton<EnergyConnectUpdaterContainer<EnergySegment, IBlockElectricConsumer, IElectricGenerator,
+                    IElectricPole>>();
 
             services.AddSingleton<SetMiningItemToMiner>();
             services.AddSingleton<MapObjectUpdateEventPacket>();
@@ -140,6 +145,7 @@ namespace Server.Boot
             serviceProvider.GetService<SetMiningItemToMiner>();
             serviceProvider.GetService<ChangeBlockStateEventPacket>();
             serviceProvider.GetService<MapObjectUpdateEventPacket>();
+            serviceProvider.GetService<SystemUpdater>();
 
             return (packetResponse, serviceProvider);
         }
