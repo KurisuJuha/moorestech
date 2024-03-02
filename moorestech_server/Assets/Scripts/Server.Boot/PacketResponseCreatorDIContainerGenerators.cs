@@ -1,4 +1,5 @@
 using System.IO;
+using Arch.Core;
 using Core.ConfigJson;
 using Core.EnergySystem;
 using Core.EnergySystem.Electric;
@@ -71,6 +72,7 @@ namespace Server.Boot
             services.AddSingleton<EventProtocolProvider, EventProtocolProvider>();
             services.AddSingleton<IWorldSettingsDatastore, WorldSettingsDatastore>();
             services.AddSingleton<IWorldBlockDatastore, WorldBlockDatastore>();
+            services.AddSingleton<IECSWorld>(new ECSWorld(World.Create()));
             services.AddSingleton<IPlayerInventoryDataStore, PlayerInventoryDataStore>();
             services.AddSingleton<IBlockInventoryOpenStateDataStore, BlockInventoryOpenStateDataStore>();
             services.AddSingleton<IWorldEnergySegmentDatastore<EnergySegment>, WorldEnergySegmentDatastore<EnergySegment>>();
