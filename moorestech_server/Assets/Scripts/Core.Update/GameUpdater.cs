@@ -9,6 +9,8 @@ namespace Core.Update
     {
         private static readonly Subject<Unit> UpdateSubject = new();
         public static IObservable<Unit> UpdateObservable => UpdateSubject;
+        private static readonly Subject<Unit> ECSWorldUpdateSubject = new();
+        public static IObservable<Unit> ECSWorldUpdateObservable => ECSWorldUpdateSubject;
         
         [Obsolete("いつかアップデートシステム自体をリファクタしたい")] public static double UpdateMillSecondTime { get; private set; } = 0;
         
@@ -18,6 +20,7 @@ namespace Core.Update
         {
             //アップデートの実行
             UpdateSubject.OnNext(Unit.Default);
+            ECSWorldUpdateSubject.OnNext(Unit.Default);
             
             UpdateMillSecondTime = (DateTime.Now - _lastUpdateTime).TotalMilliseconds;
             _lastUpdateTime = DateTime.Now;
@@ -40,6 +43,7 @@ namespace Core.Update
         public static void Dispose()
         {
             UpdateSubject.Dispose();
+            ECSWorldUpdateSubject.Dispose();
         }
     }
 }
