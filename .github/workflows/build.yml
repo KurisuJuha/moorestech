@@ -50,7 +50,7 @@ jobs:
       
       # Build
       - name: ${{ matrix.platform.name }} Build project
-        uses: game-ci/unity-builder@v2
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -58,6 +58,7 @@ jobs:
         with:
           unityVersion: 2022.3.1f1
           buildMethod: ${{ matrix.platform.buildMethod }}
+          targetPlatform: ${{ matrix.platform.name }}
           allowDirtyBuild: true
           projectPath: moorestech_client/
       
@@ -73,7 +74,7 @@ jobs:
       - name: Archive for Linux
         if: matrix.platform.name == 'StandaloneLinux64'
         run: |
-          tar -czvf output.tar.gz Output_${{ matrix.platform.name }}
+          tar -czvf output.tar.gz moorestech_client/Output_${{ matrix.platform.name }}
       
       # Upload Archival for Linux
       - name: Upload Archival for Linux

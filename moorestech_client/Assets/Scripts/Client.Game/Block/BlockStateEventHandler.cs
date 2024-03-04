@@ -1,9 +1,10 @@
-﻿using Client.Network.API;
+﻿using Client.Game.Context;
+using Client.Network.API;
 using Game.Block.Interface.BlockConfig;
 using MainGame.UnityView.Chunk;
 using MessagePack;
 using Server.Event.EventReceive;
-using SinglePlay;
+using ServerServiceProvider;
 using UnityEngine;
 using VContainer.Unity;
 
@@ -16,11 +17,11 @@ namespace MainGame.Presenter.Block
         private readonly ChunkBlockGameObjectDataStore _chunkBlockGameObjectDataStore;
 
 
-        public BlockStateEventHandler(ChunkBlockGameObjectDataStore chunkBlockGameObjectDataStore, SinglePlayInterface singlePlayInterface)
+        public BlockStateEventHandler(ChunkBlockGameObjectDataStore chunkBlockGameObjectDataStore, MoorestechServerServiceProvider moorestechServerServiceProvider)
         {
-            _blockConfig = singlePlayInterface.BlockConfig;
+            _blockConfig = moorestechServerServiceProvider.BlockConfig;
             _chunkBlockGameObjectDataStore = chunkBlockGameObjectDataStore;
-            VanillaApi.Event.RegisterEventResponse(ChangeBlockStateEventPacket.EventTag, OnStateChange);
+            MoorestechContext.VanillaApi.Event.RegisterEventResponse(ChangeBlockStateEventPacket.EventTag, OnStateChange);
         }
 
         public void Initialize()

@@ -1,10 +1,11 @@
 using System;
+using Client.Game.Context;
 using Client.Network.API;
 using Core.Item;
 using Game.PlayerInventory.Interface;
 using MainGame.Network.Send;
 using Server.Protocol.PacketResponse.Util.InventoryMoveUtil;
-using SinglePlay;
+using ServerServiceProvider;
 
 namespace MainGame.UnityView.UI.Inventory.Main
 {
@@ -18,10 +19,10 @@ namespace MainGame.UnityView.UI.Inventory.Main
         private readonly ItemStackFactory _itemStackFactory;
         private ISubInventory _subInventory;
         
-        public LocalPlayerInventoryController(SinglePlayInterface singlePlayInterface,ILocalPlayerInventory localPlayerInventoryMainAndSubCombine)
+        public LocalPlayerInventoryController(MoorestechServerServiceProvider moorestechServerServiceProvider,ILocalPlayerInventory localPlayerInventoryMainAndSubCombine)
         {
             _mainAndSubCombine = (LocalPlayerInventory)localPlayerInventoryMainAndSubCombine;
-            _itemStackFactory = singlePlayInterface.ItemStackFactory;
+            _itemStackFactory = moorestechServerServiceProvider.ItemStackFactory;
             GrabInventory = _itemStackFactory.Create(0, 0);
         }
 
@@ -86,7 +87,7 @@ namespace MainGame.UnityView.UI.Inventory.Main
             {
                 var fromInfo = GetServerInventoryInfo(from,fromSlot);
                 var toInfo = GetServerInventoryInfo(to,toSlot);
-                VanillaApi.SendOnly.ItemMove(count, ItemMoveType.SwapSlot, fromInfo,fromSlot, toInfo,toSlot);
+                MoorestechContext.VanillaApi.SendOnly.ItemMove(count, ItemMoveType.SwapSlot, fromInfo,fromSlot, toInfo,toSlot);
             }
 
             ItemMoveInventoryInfo GetServerInventoryInfo(LocalMoveInventoryType localType,int localSlot)

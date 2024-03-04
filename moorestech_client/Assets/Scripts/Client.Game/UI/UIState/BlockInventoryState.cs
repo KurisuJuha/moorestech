@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Client.Game.Context;
 using Client.Network.API;
 using Cysharp.Threading.Tasks;
 using Game.Block;
@@ -13,7 +14,7 @@ using MainGame.UnityView.UI.Inventory;
 using MainGame.UnityView.UI.Inventory.Main;
 using MainGame.UnityView.UI.Inventory.Sub;
 using MainGame.UnityView.UI.UIState.UIObject;
-using SinglePlay;
+using ServerServiceProvider;
 using UnityEngine;
 
 namespace MainGame.UnityView.UI.UIState
@@ -23,7 +24,7 @@ namespace MainGame.UnityView.UI.UIState
         private readonly IBlockClickDetect _blockClickDetect;
         private readonly ChunkBlockGameObjectDataStore _chunkBlockGameObjectDataStore;
 
-        private readonly SinglePlayInterface _singlePlayInterface;
+        private readonly MoorestechServerServiceProvider _moorestechServerServiceProvider;
         private readonly BlockInventoryView _blockInventoryView;
         private readonly PlayerInventoryViewController _playerInventoryViewController;
 
@@ -31,11 +32,11 @@ namespace MainGame.UnityView.UI.UIState
         
         private Vector2Int _openBlockPos;
 
-        public BlockInventoryState(BlockInventoryView blockInventoryView, IBlockClickDetect blockClickDetect, ChunkBlockGameObjectDataStore chunkBlockGameObjectDataStore, SinglePlayInterface singlePlayInterface,PlayerInventoryViewController playerInventoryViewController)
+        public BlockInventoryState(BlockInventoryView blockInventoryView, IBlockClickDetect blockClickDetect, ChunkBlockGameObjectDataStore chunkBlockGameObjectDataStore, MoorestechServerServiceProvider moorestechServerServiceProvider,PlayerInventoryViewController playerInventoryViewController)
         {
             _blockClickDetect = blockClickDetect;
             _chunkBlockGameObjectDataStore = chunkBlockGameObjectDataStore;
-            _singlePlayInterface = singlePlayInterface;
+            _moorestechServerServiceProvider = moorestechServerServiceProvider;
             _playerInventoryViewController = playerInventoryViewController;
             _blockInventoryView = blockInventoryView;
             
@@ -57,14 +58,14 @@ namespace MainGame.UnityView.UI.UIState
             InputManager.MouseCursorVisible(true);
 
             //サーバーのリクエスト
-            VanillaApi.SendOnly.SetOpenCloseBlock(_openBlockPos,true);
+            MoorestechContext.VanillaApi.SendOnly.SetOpenCloseBlock(_openBlockPos,true);
             _cancellationTokenSource = new CancellationTokenSource();
             UpdateBlockInventory(_openBlockPos, _cancellationTokenSource.Token).Forget();
             
 
             //ブロックインベントリのビューを設定する
             var id = _chunkBlockGameObjectDataStore.GetBlockGameObject(_openBlockPos).BlockId;
-            var config = _singlePlayInterface.BlockConfig.GetBlockConfig(id);
+            var config = _moorestechServerServiceProvider.BlockConfig.GetBlockConfig(id);
             
             var type = config.Type switch
             {
@@ -85,7 +86,7 @@ namespace MainGame.UnityView.UI.UIState
 
         private async UniTask UpdateBlockInventory(Vector2Int pos,CancellationToken ct)
         {
-            var response = await VanillaApi.Response.GetBlockInventory(pos, ct);
+            var response = await MoorestechContext.VanillaApi.Response.GetBlockInventory(pos, ct);
             _blockInventoryView.SetItemList(response);
         }
 
@@ -94,7 +95,7 @@ namespace MainGame.UnityView.UI.UIState
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource = null;
             
-            VanillaApi.SendOnly.SetOpenCloseBlock(_openBlockPos,false);
+            MoorestechContext.VanillaApi.SendOnly.SetOpenCloseBlock(_openBlockPos,false);
 
             _blockInventoryView.SetActive(false);
             _playerInventoryViewController.SetActive(false);
