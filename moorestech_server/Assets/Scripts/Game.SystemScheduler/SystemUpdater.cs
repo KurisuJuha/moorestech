@@ -10,21 +10,20 @@ namespace Game.SystemScheduler
 
     public sealed class SystemUpdater
     {
-        private readonly IECSWorld _world;
         public readonly List<System> Systems = new();
+        private SystemState _state;
 
         public SystemUpdater(IECSWorld world)
         {
-            _world = world;
+            _state = new SystemState(world.World);
             GameUpdater.ECSWorldUpdateObservable.Subscribe(_ => Update());
         }
 
         private void Update()
         {
-            Debug.Log($"Update SystemScheduler {_world}");
+            Debug.Log("Update SystemScheduler");
 
-            var state = new SystemState();
-            foreach (var system in Systems) system.Invoke(ref state);
+            foreach (var system in Systems) system.Invoke(ref _state);
         }
 
         public void AddSystems(params System[] systems)
