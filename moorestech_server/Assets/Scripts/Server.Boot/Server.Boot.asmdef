@@ -31,7 +31,8 @@
         "Mod.Base",
         "Core.Update",
         "Server.Util",
-        "Game.SystemScheduler"
+        "Game.SystemScheduler",
+        "Game.Systems"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
