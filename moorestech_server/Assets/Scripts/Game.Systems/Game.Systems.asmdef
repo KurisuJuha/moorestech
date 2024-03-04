@@ -2,7 +2,10 @@
     "name": "Game.Systems",
     "rootNamespace": "Game.Systems",
     "references": [
-        "Game.SystemScheduler"
+        "Game.SystemScheduler",
+        "Game.World",
+        "Game.World.Interface",
+        "Game.Block.Interface"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
