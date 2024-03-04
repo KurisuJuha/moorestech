@@ -26,6 +26,7 @@ using Game.PlayerInventory.Interface;
 using Game.PlayerInventory.Interface.Event;
 using Game.SaveLoad.Interface;
 using Game.SaveLoad.Json;
+using Game.Systems;
 using Game.SystemScheduler;
 using Game.World.DataStore;
 using Game.World.DataStore.WorldSettings;
@@ -138,12 +139,15 @@ namespace Server.Boot
             serviceProvider.GetService<BlockPlaceEventToBlockInventoryConnect>();
             serviceProvider.GetService<BlockRemoveEventToBlockInventoryDisconnect>();
 
-            serviceProvider.GetService<EnergyConnectUpdaterContainer<EnergySegment, IBlockElectricConsumer, IElectricGenerator, IElectricPole>>();
+            serviceProvider
+                .GetService<EnergyConnectUpdaterContainer<EnergySegment, IBlockElectricConsumer, IElectricGenerator,
+                    IElectricPole>>();
 
             serviceProvider.GetService<SetMiningItemToMiner>();
             serviceProvider.GetService<ChangeBlockStateEventPacket>();
             serviceProvider.GetService<MapObjectUpdateEventPacket>();
             serviceProvider.GetService<SystemUpdater>();
+            serviceProvider.GetService<GameSystems>();
 
             return (packetResponse, serviceProvider);
         }
